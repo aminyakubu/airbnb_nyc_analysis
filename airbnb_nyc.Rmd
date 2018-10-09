@@ -1,0 +1,78 @@
+---
+title: "AirBnB - NYC"
+author: "Amin Yakubu"
+date: "10/9/2018"
+output: github_document
+---
+
+
+```{r}
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+```{r}
+library(tidyverse)
+library(p8105.datasets)
+
+data(nyc_airbnb)
+
+```
+
+```{r, eval = FALSE}
+nyc_airbnb %>% View
+```
+
+```{r}
+airbnb = nyc_airbnb %>% 
+  mutate(starts = review_scores_location/2) %>% 
+  rename(boro = neighbourhood_group)
+
+airbnb %>% 
+  count(boro, neighbourhood)
+```
+
+
+## Some questions
+
+* Does rating vary by neighborhood, room type or both?
+* How is pice related to other variables?
+* Where are rentals located?
+* What's the most expensive area? What about the least?
+* Which listing have the most unfilled days? 
+* Which area has the highest density of listings?
+* What are some host characteristics? What's associated with ratings?
+
+```{r}
+airbnb %>% 
+  select(neighbourhood, price) %>% 
+  group_by(neighbourhood) %>% 
+  summarize( number = n(),
+             mean_price = mean(price, na.rm = FALSE),
+             median_price = mean(price, na.rm = FALSE)) %>% 
+  top_n(5, mean_price)
+
+airbnb %>% 
+  select(neighbourhood, price) %>% 
+  group_by(neighbourhood) %>% 
+  summarize( number = n(),
+             mean_price = mean(price, na.rm = FALSE),
+             median_price = mean(price, na.rm = FALSE)) %>% 
+  top_n(-5, mean_price)
+```
+
+##### Where are rentals located?
+
+```{r}
+airbnb %>% 
+  ggplot(aes(x = longitude, y = latitude, color = price)) +
+  geom_point(alpha = .2) +
+  facet_grid(~room_type) +
+  scale_color_viridis_c()
+
+```
